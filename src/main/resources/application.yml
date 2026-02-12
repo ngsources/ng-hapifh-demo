@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+security:
+  jwt:
+    secret: "VERY_SECRET_256_BIT_KEY_CHANGE_ME"
+    expiration-minutes: 6000
+logging:
+  level:
+    root: INFO           # base log level
+    ng.hapifh.demo: TRACE  # package-specic
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/fhirdb
+    username: fhiruser
+    password: fhirpass
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml

@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+security:
+  jwt:
+    secret: "VERY_SECRET_256_BIT_KEY_CHANGE_ME"
+    expiration-minutes: 6000
+logging:
+  level:
+    root: INFO           # base log level
+    ng.hapifh.demo: TRACE  # package-specic
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    initialization-mode: never
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+  liquibase:
+    enabled: false
+
+fhir:
+  exception-handling-enabled: false

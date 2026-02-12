@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: fhir-postgres
+    environment:
+      POSTGRES_DB: fhirdb
+      POSTGRES_USER: fhiruser
+      POSTGRES_PASSWORD: fhirpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  fhir-server:
+    build: .
+    container_name: fhir-server
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fhirdb
+      SPRING_DATASOURCE_USERNAME: fhiruser
+      SPRING_DATASOURCE_PASSWORD: fhirpass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SECURITY_JWT_SECRET: VERY_SECRET_256_BIT_KEY_CHANGE_ME
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:

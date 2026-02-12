@@ -1,0 +1,492 @@
+{
+  "info": {
+    "_postman_id": "435b36df-1cd5-4438-95a6-467434e27ec3",
+    "name": "HAPI FHIR Demo Auto JWT",
+    "description": "FHIR CRUD demo with auto JWT retrieval",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "5995873"
+  },
+  "item": [
+    {
+      "name": "Get CapabilityStatement",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/metadata",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "metadata"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Organization",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "if (jsonData.id) {\r",
+              "    pm.environment.set(\"organizationId\", jsonData.id);\r",
+              "    console.log(\"Extracted Organization ID:\", jsonData.id);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"Organization\",\n  \"name\": \"Test2\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/Organization",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Organization"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search Organization by name",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.environment.get(\"jwtToken\")) {",
+              "    pm.sendRequest({",
+              "        url: pm.environment.get(\"baseUrl\").replace(\"/fhir\", \"\") + \"/auth/token\",",
+              "        method: 'POST',",
+              "        header: { 'Content-Type': 'application/x-www-form-urlencoded' },",
+              "        body: {",
+              "            mode: 'urlencoded',",
+              "            urlencoded: [",
+              "                { key: 'username', value: 'admin' },",
+              "                { key: 'role', value: 'WRITE' }",
+              "            ]",
+              "        }",
+              "    }, function (err, res) {",
+              "        if (!err) {",
+              "            var jsonData = res.json();",
+              "            pm.environment.set(\"jwtToken\", jsonData.token);",
+              "        } else {",
+              "            console.log(err);",
+              "        }",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/Organization?name=Test",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Organization"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "Test"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Organization by ID",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.environment.get(\"jwtToken\")) {",
+              "    pm.sendRequest({",
+              "        url: pm.environment.get(\"baseUrl\").replace(\"/fhir\", \"\") + \"/auth/token\",",
+              "        method: 'POST',",
+              "        header: { 'Content-Type': 'application/x-www-form-urlencoded' },",
+              "        body: {",
+              "            mode: 'urlencoded',",
+              "            urlencoded: [",
+              "                { key: 'username', value: 'admin' },",
+              "                { key: 'role', value: 'WRITE' }",
+              "            ]",
+              "        }",
+              "    }, function (err, res) {",
+              "        if (!err) {",
+              "            var jsonData = res.json();",
+              "            pm.environment.set(\"jwtToken\", jsonData.token);",
+              "        } else {",
+              "            console.log(err);",
+              "        }",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/Organization/7f4a703d-1eca-41d3-bfbd-0616c9073933",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Organization",
+            "7f4a703d-1eca-41d3-bfbd-0616c9073933"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Patient",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.environment.get(\"jwtToken\")) {",
+              "    pm.sendRequest({",
+              "        url: pm.environment.get(\"baseUrl\").replace(\"/fhir\", \"\") + \"/auth/token\",",
+              "        method: 'POST',",
+              "        header: { 'Content-Type': 'application/x-www-form-urlencoded' },",
+              "        body: {",
+              "            mode: 'urlencoded',",
+              "            urlencoded: [",
+              "                { key: 'username', value: 'admin' },",
+              "                { key: 'role', value: 'WRITE' }",
+              "            ]",
+              "        }",
+              "    }, function (err, res) {",
+              "        if (!err) {",
+              "            var jsonData = res.json();",
+              "            pm.environment.set(\"jwtToken\", jsonData.token);",
+              "        } else {",
+              "            console.log(err);",
+              "        }",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();\r",
+              "\r",
+              "if (jsonData.id) {\r",
+              "    pm.environment.set(\"patientId\", jsonData.id);\r",
+              "    console.log(\"Extracted Patient ID:\", jsonData.id);\r",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/fhir+json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"resourceType\": \"Patient\",\n  \"name\": [{ \"family\": \"Doe\", \"given\": [\"John\"] }],\n  \"gender\": \"male\",\n  \"birthDate\": \"1990-01-01\",\n  \"managingOrganization\": { \"reference\": \"Organization/7f4a703d-1eca-41d3-bfbd-0616c9073933\" }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/Patient",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patient"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Search Patient by name",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.environment.get(\"jwtToken\")) {",
+              "    pm.sendRequest({",
+              "        url: pm.environment.get(\"baseUrl\").replace(\"/fhir\", \"\") + \"/auth/token\",",
+              "        method: 'POST',",
+              "        header: { 'Content-Type': 'application/x-www-form-urlencoded' },",
+              "        body: {",
+              "            mode: 'urlencoded',",
+              "            urlencoded: [",
+              "                { key: 'username', value: 'admin' },",
+              "                { key: 'role', value: 'WRITE' }",
+              "            ]",
+              "        }",
+              "    }, function (err, res) {",
+              "        if (!err) {",
+              "            var jsonData = res.json();",
+              "            pm.environment.set(\"jwtToken\", jsonData.token);",
+              "        } else {",
+              "            console.log(err);",
+              "        }",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/Patientn?name=Test",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patientn"
+          ],
+          "query": [
+            {
+              "key": "name",
+              "value": "Test"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Patient by ID",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "if (!pm.environment.get(\"jwtToken\")) {",
+              "    pm.sendRequest({",
+              "        url: pm.environment.get(\"baseUrl\").replace(\"/fhir\", \"\") + \"/auth/token\",",
+              "        method: 'POST',",
+              "        header: { 'Content-Type': 'application/x-www-form-urlencoded' },",
+              "        body: {",
+              "            mode: 'urlencoded',",
+              "            urlencoded: [",
+              "                { key: 'username', value: 'admin' },",
+              "                { key: 'role', value: 'WRITE' }",
+              "            ]",
+              "        }",
+              "    }, function (err, res) {",
+              "        if (!err) {",
+              "            var jsonData = res.json();",
+              "            pm.environment.set(\"jwtToken\", jsonData.token);",
+              "        } else {",
+              "            console.log(err);",
+              "        }",
+              "    });",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{jwtToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/Patient/{{patientId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "Patient",
+            "{{patientId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();\r",
+              "pm.environment.set(\"jwtToken\", jsonData.token);\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/auth/token?username=admin&roles=WRITE",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "auth",
+            "token"
+          ],
+          "query": [
+            {
+              "key": "username",
+              "value": "admin",
+              "type": "text"
+            },
+            {
+              "key": "roles",
+              "value": "WRITE",
+              "type": "text"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwtToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/fhir"
+    },
+    {
+      "key": "jwtToken",
+      "value": ""
+    }
+  ]
+}

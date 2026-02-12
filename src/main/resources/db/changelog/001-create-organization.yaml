@@ -1,0 +1,26 @@
+databaseChangeLog:
+- changeSet:
+    id: enable-uuid-extension
+    author: ng
+    changes:
+      - sql:
+          sql: CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+- changeSet:
+      id: 001-create-organization
+      author: ng
+      changes:
+        - createTable:
+            tableName: organization
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: uuid_generate_v4()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
